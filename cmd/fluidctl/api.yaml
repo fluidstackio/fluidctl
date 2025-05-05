@@ -1,0 +1,702 @@
+openapi: 3.0.0
+info:
+  title: Atlas API
+  version: 1.0.0
+paths:
+  /projects:
+    post:
+      summary: Create a project
+      tags:
+        - Projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-ORG-ID'
+      requestBody:
+        description: Details of the project to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectsPostRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+    get:
+      summary: List all projects
+      tags:
+        - Projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-ORG-ID'
+      responses:
+        '200':
+          description: A list of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '500':
+          description: Server error
+  /projects/{id}:
+    get:
+      summary: Get a project
+      tags:
+        - Projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the project
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          description: Project not found
+        '500':
+          description: Server error
+    put:
+      summary: Update a project
+      tags:
+        - Projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the project
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update the project details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Invalid input
+        '404':
+          description: Project not found
+        '500':
+          description: Server error
+    delete:
+      summary: Delete a project
+      tags:
+        - Projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the project to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Project deleted successfully
+        '404':
+          description: Project not found
+        '500':
+          description: Server error
+  /instances:
+    post:
+      summary: Create a machine instance
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+      requestBody:
+        description: Details of the instance to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstancesPostRequest'
+      responses:
+        '201':
+          description: Instance created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+    get:
+      summary: List all machine instances
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+      responses:
+        '200':
+          description: A list of machine instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instance'
+        '500':
+          description: Server error
+  /instances/{id}:
+    get:
+      summary: Get a machine instance
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the instance
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Instance details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        '404':
+          description: Instance not found
+        '500':
+          description: Server error
+    delete:
+      summary: Delete a machine instance
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the instance
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Instance deleted successfully
+        '404':
+          description: Instance not found
+        '500':
+          description: Server error
+  /instances/{id}/actions/start:
+    post:
+      summary: Start a machine instance
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the instance
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Instance start initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        '400':
+          description: Invalid input
+        '404':
+          description: Instance not found
+        '409':
+          description: Instance state conflict
+        '500':
+          description: Server error
+  /instances/{id}/actions/stop:
+    post:
+      summary: Stop a machine instance
+      tags:
+        - Instances
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the instance
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Instance stop initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        '400':
+          description: Invalid input
+        '404':
+          description: Instance not found
+        '409':
+          description: Instance state conflict
+        '500':
+          description: Server error
+  /instance-types:
+    get:
+      summary: List all available instance types
+      tags:
+        - Instance Types
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of available instance types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InstanceType'
+        '500':
+          description: Server error
+  /filesystems:
+    post:
+      summary: Create a filesystem
+      tags:
+        - Filesystems
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+      requestBody:
+        description: Details of the filesystem to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilesystemsPostRequest'
+      responses:
+        '201':
+          description: Filesystem created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filesystem'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+    get:
+      summary: List all filesystems
+      tags:
+        - Filesystems
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+      responses:
+        '200':
+          description: A list of filesystems
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Filesystem'
+        '500':
+          description: Server error
+  /filesystems/{id}:
+    get:
+      summary: Get a filesystem
+      tags:
+        - Filesystems
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the filesystem
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Filesystem details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filesystem'
+        '404':
+          description: Filesystem not found
+        '500':
+          description: Server error
+    delete:
+      summary: Delete a filesystem
+      tags:
+        - Filesystems
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the filesystem
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Filesystem deleted successfully
+        '404':
+          description: Filesystem not found
+        '500':
+          description: Server error
+  /capacity:
+    get:
+      summary: List available capacity
+      tags:
+        - Capacity
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/X-PROJECT-ID'
+        - $ref: '#/components/parameters/X-ORG-ID'
+      responses:
+        '200':
+          description: A list of available capacity by instance type.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Available instance type
+                      example: h100-hgx-80gb.8x
+                    capacity:
+                      type: integer
+                      description: Available instance count
+                      example: 1
+                  required:
+                  - name
+                  - capacity
+        '500':
+          description: Server error
+  /session:
+    post:
+      summary: Create a session
+      tags:
+        - Session
+      requestBody:
+        description: User credentials for session creation
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user
+                  example: admin
+                password:
+                  type: string
+                  description: The password of the user
+                  example: password123
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Authentication token
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1Njc4MTIzODcsImlzcyI6ImF0bGFzIiwibmJmIjoxNTY3ODEyMzg3LCJzdWIiOiJhZG1pbiJ9.ejyTgFxLhuY9mOBtKhcnvobg3QZXJ4_RusN_KIdVwao
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized
+        '500':
+          description: Server error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    InstancesPostRequest:
+      type: object
+      description: POST request for a machine instance
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+          description: Name of the instance
+          example: instance-1
+        type:
+          type: string
+          description: Instance type
+          example: h100-hgx-80gb.8x
+        image:
+          type: string
+          description: Image URL for the instance
+          default: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+          example: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+        preemptible:
+          type: boolean
+          description: Whether the instance is preemptible
+          default: false
+          example: false
+        userData:
+          type: string
+          format: byte
+          description: Base64-encoded cloud-init user data for instance initialization
+          nullable: true
+          default: null
+          example: |
+            I2Nsb3VkLWNvbmZpZwpwYWNrYWdlczoKICAtIG5naW54
+        filesystems:
+          type: array
+          description: List of filesystem UUIDs attached to the instance
+          items:
+            type: string
+            format: uuid
+          example:
+            - 123e4567-e89b-12d3-a456-426614174000
+            - 123e4567-e89b-12d3-a456-426614174001
+    Instance:
+      type: object
+      description: machine instance
+      required:
+      - id
+      - name
+      - type
+      - state
+      - image
+      - preemptible
+      - userData
+      - filesystems
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the instance
+          example: 550e8400-e29b-41d4-a716-446655440000
+        name:
+          type: string
+          description: Name of the instance
+          example: instance-1
+        type:
+          type: string
+          description: Instance type
+          example: h100-hgx-80gb.8x
+        state:
+          $ref: '#/components/schemas/InstanceState'
+        image:
+          type: string
+          description: Image URL for the instance
+          example: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+        preemptible:
+          type: boolean
+          description: Whether the instance is preemptible
+          example: false
+        userData:
+          type: string
+          format: byte
+          nullable: true
+          description: Base64-encoded cloud-init user data for instance initialization
+          example: |
+            I2Nsb3VkLWNvbmZpZwpwYWNrYWdlczoKICAtIG5naW54
+        filesystems:
+          type: array
+          description: List of filesystem UUIDs attached to the instance
+          items:
+            type: string
+            format: uuid
+          example:
+            - 123e4567-e89b-12d3-a456-426614174000
+            - 123e4567-e89b-12d3-a456-426614174001
+    InstanceType:
+      type: object
+      description: Machine instance type
+      required:
+      - name
+      - cpu
+      - memory
+      properties:
+        name:
+          type: string
+          description: Name of the instance type
+          example: h100-hgx-80gb.8x
+        cpu:
+          type: integer
+          description: Number of CPUs the instance type has
+          example: 128
+        memory:
+          type: string
+          description: Amount of memory the instance type has
+          example: 1Ti
+    InstanceState:
+      type: string
+      description: Possible states of a machine instance
+      enum:
+        - creating
+        - starting
+        - running
+        - stopping
+        - stopped
+        - deleting
+        - error
+      example: running
+    FilesystemsPostRequest:
+      type: object
+      description: POST request for a filesystem
+      required:
+      - name
+      - size
+      properties:
+        name:
+          type: string
+          description: Name of the filesystem
+          example: fs-1
+        size:
+          type: string
+          description: Size of the filesystem in GB
+          example: "512Gi"
+    Filesystem:
+      type: object
+      description: Filesystem (virtio-fs)
+      required:
+      - id
+      - name
+      - size
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the filesystem
+          example: 123e4567-e89b-12d3-a456-426614174002
+        name:
+          type: string
+          description: Name of the filesystem
+          example: fs-1
+        size:
+          type: string
+          description: Size of the filesystem in GB
+          example: "512Gi"
+    ProjectsPostRequest:
+      type: object
+      description: POST request for a project
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the project
+          example: project-1
+    Project:
+      type: object
+      description: Project information
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the project
+          example: 123e4567-e89b-12d3-a456-426614174003
+        name:
+          type: string
+          description: Name of the project
+          example: project-1
+  parameters:
+    X-PROJECT-ID:
+      name: X-PROJECT-ID
+      in: header
+      required: true
+      description: Project identifier passed as a header
+      schema:
+        type: string
+        format: uuid
+    X-ORG-ID:
+      name: X-ORG-ID
+      in: header
+      required: false
+      description: Organization identifier passed as a header. This is optional and can normally inferred by the bearer token used for authentication.
+      schema:
+        type: string
+        format: uuid
