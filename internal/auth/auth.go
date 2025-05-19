@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
@@ -20,6 +21,7 @@ import (
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 var (
@@ -31,6 +33,20 @@ var (
 	defaultRedirect  = "http://localhost:5173"
 	defaultTokenFile = "~/.fluidstack/token"
 )
+
+func fetchTokenFromClientCredentials(clientID string, clientSecret string) (*oauth2.Token, error) {
+	config := &clientcredentials.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		TokenURL:     defaultTokenURL,
+		AuthStyle:    oauth2.AuthStyleInParams,
+		EndpointParams: map[string][]string{
+			"audience": {defaultAudience},
+		},
+	}
+
+	return config.TokenSource(context.Background()).Token()
+}
 
 func isTokenExpired(tokenString string) (bool, error) {
 	token, _, err := jwt.NewParser().ParseUnverified(tokenString, jwt.MapClaims{})
@@ -104,6 +120,17 @@ func GenerateCodeChallenge(verifier string) string {
 }
 
 func Login(cmd *cobra.Command) (string, error) {
+	clientID := utils.MustGetStringFlag(cmd, "client-id")
+	clientSecret := utils.MustGetStringFlag(cmd, "client-secret")
+	if clientID != "" && clientSecret != "" {
+		token, err := fetchTokenFromClientCredentials(clientID, clientSecret)
+		if err != nil {
+			return "", fmt.Errorf("failed to fetch token: %w", err)
+		}
+
+		return token.AccessToken, nil
+	}
+
 	tokenString := utils.MustGetStringFlag(cmd, "token")
 	if tokenString != "" {
 		return tokenString, nil

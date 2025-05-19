@@ -28,6 +28,8 @@ func rootCommand() *cobra.Command {
 	cmd.PersistentFlags().StringP("url", "U", "https://atlas.fluidstack.io", "Atlas Server URL")
 	cmd.PersistentFlags().StringP("format", "F", "yaml", "Output format (json, yaml)")
 	cmd.PersistentFlags().StringP("token", "T", "", "Auth token")
+	cmd.PersistentFlags().String("client-id", "", "OAuth Client ID")
+	cmd.PersistentFlags().String("client-secret", "", "OAuth Client Secret")
 
 	cmd.AddCommand(
 		instance.Command(),
