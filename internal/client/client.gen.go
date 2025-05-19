@@ -132,7 +132,7 @@ type ProjectsPostRequest struct {
 }
 
 // XORGID defines model for X-ORG-ID.
-type XORGID = openapi_types.UUID
+type XORGID = string
 
 // XPROJECTID defines model for X-PROJECT-ID.
 type XPROJECTID = openapi_types.UUID
@@ -266,15 +266,6 @@ type PutProjectsIdParams struct {
 	XORGID *XORGID `json:"X-ORG-ID,omitempty"`
 }
 
-// PostSessionJSONBody defines parameters for PostSession.
-type PostSessionJSONBody struct {
-	// Password The password of the user
-	Password string `json:"password"`
-
-	// Username The username of the user
-	Username string `json:"username"`
-}
-
 // PostFilesystemsJSONRequestBody defines body for PostFilesystems for application/json ContentType.
 type PostFilesystemsJSONRequestBody = FilesystemsPostRequest
 
@@ -286,9 +277,6 @@ type PostProjectsJSONRequestBody = ProjectsPostRequest
 
 // PutProjectsIdJSONRequestBody defines body for PutProjectsId for application/json ContentType.
 type PutProjectsIdJSONRequestBody = Project
-
-// PostSessionJSONRequestBody defines body for PostSession for application/json ContentType.
-type PostSessionJSONRequestBody PostSessionJSONBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -421,11 +409,6 @@ type ClientInterface interface {
 	PutProjectsIdWithBody(ctx context.Context, id openapi_types.UUID, params *PutProjectsIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutProjectsId(ctx context.Context, id openapi_types.UUID, params *PutProjectsIdParams, body PutProjectsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostSessionWithBody request with any body
-	PostSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	PostSession(ctx context.Context, body PostSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetCapacity(ctx context.Context, params *GetCapacityParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -670,30 +653,6 @@ func (c *Client) PutProjectsIdWithBody(ctx context.Context, id openapi_types.UUI
 
 func (c *Client) PutProjectsId(ctx context.Context, id openapi_types.UUID, params *PutProjectsIdParams, body PutProjectsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutProjectsIdRequest(c.Server, id, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostSessionWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostSessionRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostSession(ctx context.Context, body PostSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostSessionRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1617,46 +1576,6 @@ func NewPutProjectsIdRequestWithBody(server string, id openapi_types.UUID, param
 	return req, nil
 }
 
-// NewPostSessionRequest calls the generic PostSession builder with application/json body
-func NewPostSessionRequest(server string, body PostSessionJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostSessionRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewPostSessionRequestWithBody generates requests for PostSession with any type of body
-func NewPostSessionRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/session")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -1758,11 +1677,6 @@ type ClientWithResponsesInterface interface {
 	PutProjectsIdWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, params *PutProjectsIdParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutProjectsIdResponse, error)
 
 	PutProjectsIdWithResponse(ctx context.Context, id openapi_types.UUID, params *PutProjectsIdParams, body PutProjectsIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutProjectsIdResponse, error)
-
-	// PostSessionWithBodyWithResponse request with any body
-	PostSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostSessionResponse, error)
-
-	PostSessionWithResponse(ctx context.Context, body PostSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*PostSessionResponse, error)
 }
 
 type GetCapacityResponse struct {
@@ -2142,31 +2056,6 @@ func (r PutProjectsIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostSessionResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		// Token Authentication token
-		Token *string `json:"token,omitempty"`
-	}
-}
-
-// Status returns HTTPResponse.Status
-func (r PostSessionResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostSessionResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 // GetCapacityWithResponse request returning *GetCapacityResponse
 func (c *ClientWithResponses) GetCapacityWithResponse(ctx context.Context, params *GetCapacityParams, reqEditors ...RequestEditorFn) (*GetCapacityResponse, error) {
 	rsp, err := c.GetCapacity(ctx, params, reqEditors...)
@@ -2350,23 +2239,6 @@ func (c *ClientWithResponses) PutProjectsIdWithResponse(ctx context.Context, id 
 		return nil, err
 	}
 	return ParsePutProjectsIdResponse(rsp)
-}
-
-// PostSessionWithBodyWithResponse request with arbitrary body returning *PostSessionResponse
-func (c *ClientWithResponses) PostSessionWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostSessionResponse, error) {
-	rsp, err := c.PostSessionWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostSessionResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostSessionWithResponse(ctx context.Context, body PostSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*PostSessionResponse, error) {
-	rsp, err := c.PostSession(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostSessionResponse(rsp)
 }
 
 // ParseGetCapacityResponse parses an HTTP response from a GetCapacityWithResponse call
@@ -2777,35 +2649,6 @@ func ParsePutProjectsIdResponse(rsp *http.Response) (*PutProjectsIdResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Project
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostSessionResponse parses an HTTP response from a PostSessionWithResponse call
-func ParsePostSessionResponse(rsp *http.Response) (*PostSessionResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostSessionResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			// Token Authentication token
-			Token *string `json:"token,omitempty"`
-		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
