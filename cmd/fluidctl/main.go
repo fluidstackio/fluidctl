@@ -10,8 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//go:generate go tool oapi-codegen -config cfg.yaml https://docs.atlas.fluidstack.io/redocusaurus/api.yaml
-
 var Version = "v0.0.0"
 
 func rootCommand() *cobra.Command {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	atlas "github.com/fluidstackio/atlas-client-go/v1alpha1"
 	"github.com/fluidstackio/fluidctl/internal/auth"
-	"github.com/fluidstackio/fluidctl/internal/client"
 	"github.com/fluidstackio/fluidctl/internal/format"
 	"github.com/fluidstackio/fluidctl/internal/utils"
 	"github.com/google/uuid"
@@ -57,18 +57,17 @@ func CreateCommand() *cobra.Command {
 				return fmt.Errorf("failed to create bearer auth: %w", err)
 			}
 
-			c, err := client.NewClientWithResponses(url+"/api/v1alpha1/", client.WithRequestEditorFn(bearerAuth.Intercept))
+			c, err := atlas.NewClientWithResponses(url+"/api/v1alpha1/", atlas.WithRequestEditorFn(bearerAuth.Intercept))
 			if err != nil {
 				return err
 			}
 
-			res, err := c.PostFilesystemsWithResponse(cmd.Context(), &client.PostFilesystemsParams{
+			res, err := c.PostFilesystemsWithResponse(cmd.Context(), &atlas.PostFilesystemsParams{
 				XPROJECTID: projectID,
-			}, client.FilesystemsPostRequest{
+			}, atlas.FilesystemsPostRequest{
 				Name: name,
 				Size: size,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -112,12 +111,12 @@ func DeleteCommand() *cobra.Command {
 				return fmt.Errorf("failed to create bearer auth: %w", err)
 			}
 
-			c, err := client.NewClientWithResponses(url+"/api/v1alpha1/", client.WithRequestEditorFn(bearerAuth.Intercept))
+			c, err := atlas.NewClientWithResponses(url+"/api/v1alpha1/", atlas.WithRequestEditorFn(bearerAuth.Intercept))
 			if err != nil {
 				return err
 			}
 
-			res, err := c.DeleteFilesystemsIdWithResponse(cmd.Context(), id, &client.DeleteFilesystemsIdParams{
+			res, err := c.DeleteFilesystemsIdWithResponse(cmd.Context(), id, &atlas.DeleteFilesystemsIdParams{
 				XPROJECTID: projectID,
 			})
 			if err != nil {
@@ -159,12 +158,12 @@ func ListCommand() *cobra.Command {
 				return fmt.Errorf("failed to create bearer auth: %w", err)
 			}
 
-			c, err := client.NewClientWithResponses(url+"/api/v1alpha1/", client.WithRequestEditorFn(bearerAuth.Intercept))
+			c, err := atlas.NewClientWithResponses(url+"/api/v1alpha1/", atlas.WithRequestEditorFn(bearerAuth.Intercept))
 			if err != nil {
 				return err
 			}
 
-			res, err := c.GetFilesystemsWithResponse(cmd.Context(), &client.GetFilesystemsParams{
+			res, err := c.GetFilesystemsWithResponse(cmd.Context(), &atlas.GetFilesystemsParams{
 				XPROJECTID: projectID,
 			})
 			if err != nil {
@@ -218,12 +217,12 @@ func DescribeCommand() *cobra.Command {
 				return fmt.Errorf("failed to create bearer auth: %w", err)
 			}
 
-			c, err := client.NewClientWithResponses(url+"/api/v1alpha1/", client.WithRequestEditorFn(bearerAuth.Intercept))
+			c, err := atlas.NewClientWithResponses(url+"/api/v1alpha1/", atlas.WithRequestEditorFn(bearerAuth.Intercept))
 			if err != nil {
 				return err
 			}
 
-			res, err := c.GetFilesystemsIdWithResponse(cmd.Context(), id, &client.GetFilesystemsIdParams{
+			res, err := c.GetFilesystemsIdWithResponse(cmd.Context(), id, &atlas.GetFilesystemsIdParams{
 				XPROJECTID: projectID,
 			})
 			if err != nil {
