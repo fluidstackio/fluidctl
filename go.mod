@@ -3,7 +3,7 @@ module github.com/fluidstackio/fluidctl
 go 1.24.2
 
 require (
-	github.com/fluidstackio/atlas-client-go v0.1.0
+	github.com/fluidstackio/atlas-client-go v0.1.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.5.0
 	github.com/mitchellh/go-homedir v1.1.0
