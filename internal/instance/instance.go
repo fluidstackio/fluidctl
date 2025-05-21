@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
+	client "github.com/fluidstackio/atlas-client-go/v1alpha1"
 	"github.com/fluidstackio/fluidctl/internal/auth"
-	"github.com/fluidstackio/fluidctl/internal/client"
 	"github.com/fluidstackio/fluidctl/internal/format"
 	"github.com/fluidstackio/fluidctl/internal/utils"
 	"github.com/google/uuid"
