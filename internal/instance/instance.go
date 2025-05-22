@@ -51,6 +51,7 @@ func CreateCommand() *cobra.Command {
 			image := utils.MustGetStringFlag(cmd, "image")
 			instanceType := utils.MustGetStringFlag(cmd, "type")
 			preemptible := utils.MustGetBoolFlag(cmd, "preemptible")
+			ephemeral := utils.MustGetBoolFlag(cmd, "ephemeral")
 
 			projectID, err := uuid.Parse(utils.MustGetStringFlag(cmd, "project"))
 			if err != nil {
@@ -60,6 +61,7 @@ func CreateCommand() *cobra.Command {
 			instance := client.InstancesPostRequest{
 				Name:        name,
 				Preemptible: &preemptible,
+				Ephemeral:   &ephemeral,
 				Type:        instanceType,
 			}
 
@@ -151,6 +153,7 @@ func CreateCommand() *cobra.Command {
 	cmd.Flags().String("image", "", "Image URL")
 	cmd.Flags().StringArray("filesystem", []string{}, "Filesystems to attach (in the format 'id=<UUID>')")
 	cmd.Flags().Bool("preemptible", false, "Create a preemptible instance")
+	cmd.Flags().Bool("ephemeral", false, "Create an ephemeral instance")
 	cmd.Flags().String("type", "cpu.2x", "Instance type")
 
 	return &cmd
