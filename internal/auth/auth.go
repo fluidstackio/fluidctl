@@ -25,9 +25,9 @@ import (
 )
 
 var (
-	defaultIssuer    = "https://fluidstack.us.auth0.com/"
-	defaultAuthURL   = "https://fluidstack.us.auth0.com/authorize"
-	defaultTokenURL  = "https://fluidstack.us.auth0.com/oauth/token"
+	defaultIssuer    = "https://oauth.fluidstack.io/"
+	defaultAuthURL   = "https://oauth.fluidstack.io/authorize"
+	defaultTokenURL  = "https://oauth.fluidstack.io/oauth/token"
 	defaultClientID  = "diPhN35HH6jVXs615vsafkdIQM4Y5rF8"
 	defaultAudience  = "https://api.fluidstack.io"
 	defaultRedirect  = "http://localhost:5173"
