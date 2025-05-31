@@ -6,6 +6,7 @@ import (
 
 	"github.com/fluidstackio/fluidctl/internal/filesystem"
 	"github.com/fluidstackio/fluidctl/internal/instance"
+	"github.com/fluidstackio/fluidctl/internal/kubernetes"
 	"github.com/fluidstackio/fluidctl/internal/project"
 	"github.com/fluidstackio/fluidctl/internal/slurm"
 	"github.com/spf13/cobra"
@@ -35,6 +36,7 @@ func rootCommand() *cobra.Command {
 		project.Command(),
 		filesystem.Command(),
 		slurm.Command(),
+		kubernetes.Command(),
 	)
 
 	return &cmd

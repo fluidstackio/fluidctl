@@ -1,4 +1,4 @@
-package slurm
+package kubernetes
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ import (
 
 func Command() *cobra.Command {
 	cmd := cobra.Command{
-		Use:   "slurm",
-		Short: "Manage slurm",
+		Use:   "kubernetes",
+		Short: "Manage kubernetes clusters",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -34,7 +34,7 @@ func Command() *cobra.Command {
 func ClusterCommand() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "clusters",
-		Short: "Manage slurm clusters",
+		Short: "Manage kubernetes clusters",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -50,7 +50,7 @@ func ClusterCommand() *cobra.Command {
 func ListCommand() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "list",
-		Short: "list slurm clusters",
+		Short: "list kubernetes clusters",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url := utils.MustGetStringFlag(cmd, "url")
 			projectID, err := uuid.Parse(utils.MustGetStringFlag(cmd, "project"))
@@ -72,7 +72,7 @@ func ListCommand() *cobra.Command {
 				return err
 			}
 
-			res, err := c.GetSlurmClustersWithResponse(cmd.Context(), &client.GetSlurmClustersParams{
+			res, err := c.GetKubernetesClustersWithResponse(cmd.Context(), &client.GetKubernetesClustersParams{
 				XPROJECTID: projectID,
 			})
 			if err != nil {
