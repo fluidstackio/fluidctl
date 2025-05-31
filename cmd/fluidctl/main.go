@@ -7,6 +7,7 @@ import (
 	"github.com/fluidstackio/fluidctl/internal/filesystem"
 	"github.com/fluidstackio/fluidctl/internal/instance"
 	"github.com/fluidstackio/fluidctl/internal/project"
+	"github.com/fluidstackio/fluidctl/internal/slurm"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +34,7 @@ func rootCommand() *cobra.Command {
 		instance.Command(),
 		project.Command(),
 		filesystem.Command(),
+		slurm.Command(),
 	)
 
 	return &cmd
